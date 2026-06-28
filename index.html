@@ -8,13 +8,17 @@
   <meta property="og:title" content="한수진 · 조애심 결혼합니다" />
   <meta property="og:description" content="2026년 11월 14일 토요일 오후 5시, 루벨 강동" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="https://via.placeholder.com/1200x630/f5f1e8/2f2924?text=Wedding+Invitation" />
+  <meta property="og:image" content="https://blankcanvas264.github.io/wedding-invitation/images/share.jpg" />
 
   <!--
     모바일 청첩장 한 파일 버전
-    1) 사진 교체: 아래 CSS의 --cover-image 또는 JS의 galleryImages 이미지 주소를 바꾸세요.
+    1) 사진 교체: GitHub 저장소에 images 폴더를 만들고 아래 파일명을 맞춰 올리세요.
+       - 표지: images/cover.jpg
+       - 공유 썸네일: images/share.jpg
+       - 갤러리: images/gallery01.jpg ~ images/gallery20.jpg
     2) 계좌/연락처 교체: HTML에서 data-account, tel: 값을 검색해 바꾸세요.
-    3) 카카오톡 공유: Kakao Developers에서 JavaScript 키를 발급받아 KAKAO_JS_KEY에 넣으면 됩니다.
+    3) 실제 카카오맵/카카오톡 공유: Kakao Developers에서 JavaScript 키를 발급받아 KAKAO_JS_KEY에 넣으세요.
+       GitHub Pages 도메인도 JavaScript SDK 도메인에 등록해야 합니다.
   -->
 
   <style>
@@ -31,7 +35,7 @@
       --shadow: 0 24px 70px rgba(79, 59, 39, 0.12);
       --serif: "Noto Serif KR", "Apple SD Gothic Neo", "Nanum Myeongjo", "Batang", serif;
       --sans: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", sans-serif;
-      --cover-image: linear-gradient(160deg, rgba(46, 41, 36, 0.08), rgba(46, 41, 36, 0.14)), url("https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=1200&q=80");
+      --cover-image: linear-gradient(160deg, rgba(46, 41, 36, 0.08), rgba(46, 41, 36, 0.14)), url("images/cover.jpg");
     }
 
     * { box-sizing: border-box; }
@@ -535,6 +539,51 @@
       transform: rotate(22deg);
     }
 
+    /* 실제 카카오맵 표시 영역 */
+    .map-card.real-map {
+      background: #efe7dc;
+    }
+
+    .map-card.real-map::before,
+    .map-card.real-map::after {
+      display: none;
+    }
+
+    .kakao-map {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+    }
+
+    .map-fallback {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      text-align: center;
+      color: #6f6258;
+      font-size: 13px;
+      line-height: 1.7;
+      background: #efe7dc;
+    }
+
+    .map-fallback b {
+      display: block;
+      margin-bottom: 8px;
+      font-family: var(--serif);
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .map-fallback.is-hidden {
+      display: none;
+    }
+
     .map-open {
       position: absolute;
       top: 14px;
@@ -965,7 +1014,7 @@
       <p class="section-subtitle">오른쪽 버튼으로 사진을 넘기거나<br />아래 작은 사진을 눌러 원하는 사진을 볼 수 있습니다.</p>
       <div class="gallery-slider" aria-label="웨딩 사진 갤러리">
         <button class="gallery-main" type="button" id="galleryMainButton" aria-label="현재 갤러리 사진 크게 보기">
-          <img id="galleryMainImage" src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=80" alt="갤러리 사진 1" />
+          <img id="galleryMainImage" src="images/gallery01.jpg" alt="갤러리 사진 1" />
           <span class="gallery-count" id="galleryCount">1 / 20</span>
         </button>
         <button class="gallery-next" type="button" id="galleryNextBtn" aria-label="다음 사진 보기">›</button>
@@ -991,16 +1040,15 @@
           </li>
         </ul>
 
-        <div class="map-card" aria-label="루벨 강동 카카오맵 지도 미리보기">
-          <a class="map-open" href="https://map.kakao.com/link/search/루벨%20강동" target="_blank" rel="noopener">카카오맵 열기</a>
-          <div class="map-road road-one" aria-hidden="true"></div>
-          <div class="map-road road-two" aria-hidden="true"></div>
-          <div class="map-road road-three" aria-hidden="true"></div>
-          <div class="map-pin" aria-hidden="true"><span>♥</span></div>
-          <div class="map-label">
-            <b>루벨 강동</b>
-            <span>이스트센트럴타워 35층</span>
+        <div class="map-card real-map" aria-label="루벨 강동 카카오맵 지도">
+          <div id="kakaoMap" class="kakao-map" aria-hidden="true"></div>
+          <div id="mapFallback" class="map-fallback">
+            <div>
+              <b>루벨 강동</b>
+              실제 카카오맵을 표시하려면<br />HTML 하단의 KAKAO_JS_KEY에<br />카카오 JavaScript 키를 넣어주세요.
+            </div>
           </div>
+          <a class="map-open" href="https://map.kakao.com/link/search/루벨%20강동%20서울%20강동구%20천호대로%201077" target="_blank" rel="noopener">카카오맵 열기</a>
         </div>
 
         <div class="guide-block" aria-label="오시는 길 상세 안내">
@@ -1100,116 +1148,35 @@
 
   <script src="https://developers.kakao.com/sdk/js/kakao.min.js" defer></script>
   <script>
-    const KAKAO_JS_KEY = ""; // 카카오 개발자센터 JavaScript 키를 넣으면 카카오톡 공유가 활성화됩니다.
+    // 카카오톡 공유와 실제 카카오맵을 사용하려면 카카오 개발자센터의 JavaScript 키를 넣으세요.
+    // 예: const KAKAO_JS_KEY = "abcd1234...";
+    const KAKAO_JS_KEY = "여기에_카카오_JavaScript_키를_붙여넣기";
+
+    // 카카오톡 공유 썸네일은 반드시 인터넷에서 접근 가능한 절대 주소가 안전합니다.
+    // GitHub 아이디/저장소명이 다르면 아래 주소와 head의 og:image 주소를 함께 바꾸세요.
+    const SHARE_IMAGE_URL = "https://blankcanvas264.github.io/wedding-invitation/images/share.jpg";
+
+    const SITE_URL = "https://blankcanvas264.github.io/wedding-invitation/"; // 본인 GitHub Pages 주소로 필요 시 수정
 
     const invitation = {
       title: "한수진 · 조애심 결혼합니다",
       description: "2026년 11월 14일 토요일 오후 5시, 루벨 강동",
-      imageUrl: "https://via.placeholder.com/1200x630/f5f1e8/2f2924?text=Wedding+Invitation"
+      imageUrl: SHARE_IMAGE_URL
     };
 
-    const galleryImages = [
-      {
-        src: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 1"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 2"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 3"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 4"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 5"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1529636798458-92182e662485?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1529636798458-92182e662485?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 6"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1465495976277-4387d4b0e4a6?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 7"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1509610973147-232dfea52a97?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1509610973147-232dfea52a97?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 8"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1494955870715-979ca4f13bf0?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1494955870715-979ca4f13bf0?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 9"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1460364157752-926555421a7e?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1460364157752-926555421a7e?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 10"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 11"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1513279922550-250c2129b13a?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1513279922550-250c2129b13a?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 12"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1502635385003-ee1e6a1a742d?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1502635385003-ee1e6a1a742d?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 13"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 14"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1537633552985-df8429e8048b?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1537633552985-df8429e8048b?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 15"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1507504031003-b417219a0fde?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1507504031003-b417219a0fde?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 16"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1525258946800-98cfd641d0de?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1525258946800-98cfd641d0de?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 17"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1523438097201-512ae7d59c44?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1523438097201-512ae7d59c44?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 18"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1532712938310-34cb3982ef74?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 19"
-      },
-      {
-        src: "https://images.unsplash.com/photo-1545232979-8bf68ee9b1af?auto=format&fit=crop&w=1000&q=80",
-        thumb: "https://images.unsplash.com/photo-1545232979-8bf68ee9b1af?auto=format&fit=crop&w=220&q=80",
-        alt: "갤러리 사진 20"
-      }
-    ];
+    const weddingPlace = {
+      name: "루벨 강동",
+      address: "서울 강동구 천호대로 1077 이스트센트럴타워 35층"
+    };
+
+    const galleryImages = Array.from({ length: 20 }, (_, index) => {
+      const number = String(index + 1).padStart(2, "0");
+      return {
+        src: `images/gallery${number}.jpg`,
+        thumb: `images/gallery${number}.jpg`,
+        alt: `갤러리 사진 ${index + 1}`
+      };
+    });
 
     const toast = document.getElementById("toast");
     let toastTimer;
@@ -1246,10 +1213,55 @@
       copyText(window.location.href, "청첩장 주소가 복사되었습니다.");
     });
 
+
+    function loadKakaoMap() {
+      const mapFallback = document.getElementById("mapFallback");
+      const mapContainer = document.getElementById("kakaoMap");
+
+      if (!KAKAO_JS_KEY || KAKAO_JS_KEY.includes("여기에_") || !mapContainer) return;
+
+      const script = document.createElement("script");
+      script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_JS_KEY}&libraries=services&autoload=false`;
+      script.onload = () => {
+        kakao.maps.load(() => {
+          const defaultCenter = new kakao.maps.LatLng(37.5356, 127.1330);
+          const map = new kakao.maps.Map(mapContainer, {
+            center: defaultCenter,
+            level: 3
+          });
+
+          const geocoder = new kakao.maps.services.Geocoder();
+          geocoder.addressSearch(weddingPlace.address, (result, status) => {
+            const position = status === kakao.maps.services.Status.OK && result[0]
+              ? new kakao.maps.LatLng(result[0].y, result[0].x)
+              : defaultCenter;
+
+            map.setCenter(position);
+
+            const marker = new kakao.maps.Marker({
+              map,
+              position
+            });
+
+            const infowindow = new kakao.maps.InfoWindow({
+              content: `<div style="padding:8px 12px;font-size:13px;white-space:nowrap;">${weddingPlace.name}</div>`
+            });
+            infowindow.open(map, marker);
+
+            if (mapFallback) mapFallback.classList.add("is-hidden");
+          });
+        });
+      };
+      script.onerror = () => showToast("카카오맵을 불러오지 못했습니다. JavaScript 키와 도메인 등록을 확인해 주세요.");
+      document.head.appendChild(script);
+    }
+
+    loadKakaoMap();
+
     document.getElementById("kakaoShareBtn").addEventListener("click", async () => {
       const currentUrl = window.location.href;
 
-      if (window.Kakao && KAKAO_JS_KEY) {
+      if (window.Kakao && KAKAO_JS_KEY && !KAKAO_JS_KEY.includes("여기에_")) {
         if (!Kakao.isInitialized()) Kakao.init(KAKAO_JS_KEY);
         Kakao.Share.sendDefault({
           objectType: "feed",
