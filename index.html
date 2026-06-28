@@ -86,18 +86,19 @@
 
     .cover {
       min-height: 100svh;
-      padding: 28px 22px 24px;
+      padding: 18px 22px 16px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: center;
       background:
         radial-gradient(circle at 50% 4%, rgba(255, 255, 255, 0.65), transparent 38%),
         var(--bg);
     }
 
     .cover-top {
+      width: 100%;
       text-align: center;
-      padding-top: max(16px, env(safe-area-inset-top));
+      padding-top: max(8px, env(safe-area-inset-top));
     }
 
     .eyebrow {
@@ -119,9 +120,10 @@
     }
 
     .cover-photo {
-      margin: 26px auto 26px;
-      width: 100%;
-      aspect-ratio: 4 / 4.6;
+      margin: 18px auto 16px;
+      width: min(100%, 360px);
+      max-height: 58svh;
+      aspect-ratio: 4 / 4.15;
       border-radius: 46% 46% 8px 8px;
       background-image: var(--cover-image);
       background-size: cover;
@@ -144,25 +146,27 @@
       text-align: center;
       font-family: var(--serif);
       font-weight: 400;
-      font-size: clamp(42px, 13vw, 62px);
-      line-height: 0.98;
-      letter-spacing: -0.055em;
+      font-size: clamp(30px, 8.5vw, 38px);
+      line-height: 1.15;
+      letter-spacing: -0.04em;
       margin: 0;
+      white-space: nowrap;
     }
 
     .cover-title .amp {
-      display: block;
-      font-size: 24px;
-      line-height: 1.8;
+      display: inline;
+      font-size: 0.72em;
+      line-height: 1;
+      margin: 0 7px;
       color: var(--accent);
       letter-spacing: 0;
       font-style: italic;
     }
 
     .cover-date {
-      margin: 20px 0 0;
+      margin: 10px 0 0;
       text-align: center;
-      font-size: 13px;
+      font-size: 12px;
       letter-spacing: 0.08em;
       color: var(--muted);
     }
@@ -170,16 +174,17 @@
     .scroll-hint {
       display: grid;
       place-items: center;
-      gap: 8px;
+      gap: 6px;
+      margin-top: 14px;
       color: var(--muted);
-      font-size: 11px;
+      font-size: 10px;
       letter-spacing: 0.08em;
-      padding-bottom: 4px;
+      padding-bottom: 0;
     }
 
     .scroll-hint i {
       width: 1px;
-      height: 32px;
+      height: 24px;
       background: linear-gradient(to bottom, transparent, var(--accent), transparent);
       animation: floatLine 1.8s ease-in-out infinite;
     }
@@ -945,18 +950,19 @@
       .button-grid { grid-template-columns: 1fr; }
       .info-list li { grid-template-columns: 64px 1fr; }
       .route-list li { grid-template-columns: 1fr; gap: 3px; }
-      .cover-title.single-line {
-      font-size: clamp(30px, 9vw, 40px);
-      line-height: 1.2;
-      letter-spacing: -0.04em;
-      white-space: nowrap;
-     }
+      .cover { padding-left: 18px; padding-right: 18px; }
+      .cover-photo { width: min(100%, 318px); aspect-ratio: 4 / 4; margin: 14px auto 12px; }
+      .cover-title { font-size: clamp(28px, 8.2vw, 34px); }
+    }
 
-     .cover-title.single-line .amp {
-     display: inline;
-     font-size: 0.72em;
-     line-height: 1;
-     margin: 0 6px;
+    @media (max-height: 700px) {
+      .cover { padding-top: 14px; padding-bottom: 12px; }
+      .cover-top { padding-top: max(4px, env(safe-area-inset-top)); }
+      .cover-photo { aspect-ratio: 4 / 3.8; margin: 14px auto 12px; max-height: 54svh; }
+      .cover-title { font-size: clamp(28px, 8vw, 34px); }
+      .cover-date { margin-top: 8px; font-size: 11px; }
+      .scroll-hint { margin-top: 10px; }
+      .scroll-hint i { height: 20px; }
     }
   </style>
 </head>
@@ -968,14 +974,14 @@
       <div class="cover-top reveal">
         <span class="eyebrow">Wedding Invitation</span>
         <div class="cover-photo" role="img" aria-label="웨딩 커버 사진"></div>
-        <h1 class="cover-title single-line">
-          Su Jin <span class="amp">&</span>Ae Sim
+        <h1 class="cover-title">
+          Su Jin <span class="amp">&</span> Ae Sim
         </h1>
         <p class="cover-date">2026. 11. 14 SAT · 5:00 PM</p>
-      </div>
-      <div class="scroll-hint" aria-hidden="true">
-        <i></i>
-        <span>SCROLL</span>
+        <div class="scroll-hint" aria-hidden="true">
+          <i></i>
+          <span>SCROLL</span>
+        </div>
       </div>
     </header>
 
