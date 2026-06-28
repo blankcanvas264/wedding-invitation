@@ -1029,6 +1029,16 @@
       .cover-photo { width: min(76%, 286px); }
       .cover-title { font-size: clamp(28px, 8.4vw, 34px); }
     }
+  
+    /* 갤러리 화살표 버튼 숨김: 스와이프 기능은 유지 */
+    .gallery-prev,
+    .gallery-next,
+    .lightbox-nav {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+
   </style>
 </head>
 <body>
@@ -1044,7 +1054,7 @@
         <h1 class="cover-title">
           Su Jin <span class="amp">&</span> Ae Sim
         </h1>
-        <p class="cover-date">2026. 11. 14 SAT<br />5:00 PM</p>
+        <p class="cover-date">2026. 11. 14 SAT<br />5:00 PM Luvel</p>
       </div>
       <div class="scroll-hint" aria-hidden="true">
         <i></i>
@@ -1099,8 +1109,8 @@
           <img id="galleryMainImage" src="images/gallery01.jpg" alt="갤러리 사진 1" />
           <span class="gallery-count" id="galleryCount">1 / 25</span>
         </button>
-        <button class="gallery-prev" type="button" id="galleryPrevBtn" aria-label="이전 사진 보기">‹</button>
-        <button class="gallery-next" type="button" id="galleryNextBtn" aria-label="다음 사진 보기">›</button>
+        <button class="gallery-prev" type="button" id="galleryPrevBtn" aria-label="이전 사진 보기" aria-hidden="true" tabindex="-1">‹</button>
+        <button class="gallery-next" type="button" id="galleryNextBtn" aria-label="다음 사진 보기" aria-hidden="true" tabindex="-1">›</button>
         <div class="gallery-thumbs" id="galleryThumbs" aria-label="갤러리 작은 사진 목록"></div>
       </div>
     </section>
@@ -1226,9 +1236,9 @@
 
   <div class="lightbox" id="lightbox" aria-modal="true" role="dialog" aria-label="갤러리 크게 보기">
     <button class="lightbox-close" type="button" id="closeLightbox" aria-label="닫기">×</button>
-    <button class="lightbox-nav lightbox-prev" type="button" id="lightboxPrevBtn" aria-label="이전 사진 보기">‹</button>
+    <button class="lightbox-nav lightbox-prev" type="button" id="lightboxPrevBtn" aria-label="이전 사진 보기" aria-hidden="true" tabindex="-1">‹</button>
     <img id="lightboxImage" src="" alt="확대된 갤러리 사진" />
-    <button class="lightbox-nav lightbox-next" type="button" id="lightboxNextBtn" aria-label="다음 사진 보기">›</button>
+    <button class="lightbox-nav lightbox-next" type="button" id="lightboxNextBtn" aria-label="다음 사진 보기" aria-hidden="true" tabindex="-1">›</button>
     <span class="lightbox-count" id="lightboxCount">1 / 25</span>
   </div>
 
@@ -1489,8 +1499,8 @@
       galleryThumbs.appendChild(thumb);
     });
 
-    galleryPrevBtn.addEventListener("click", prevGalleryImage);
-    galleryNextBtn.addEventListener("click", nextGalleryImage);
+    if (galleryPrevBtn) galleryPrevBtn.addEventListener("click", prevGalleryImage);
+    if (galleryNextBtn) galleryNextBtn.addEventListener("click", nextGalleryImage);
 
     attachSwipe(galleryMainButton, nextGalleryImage, prevGalleryImage);
 
@@ -1503,12 +1513,12 @@
       document.body.style.overflow = "hidden";
     });
 
-    lightboxPrevBtn.addEventListener("click", (event) => {
+    if (lightboxPrevBtn) lightboxPrevBtn.addEventListener("click", (event) => {
       event.stopPropagation();
       prevGalleryImage();
     });
 
-    lightboxNextBtn.addEventListener("click", (event) => {
+    if (lightboxNextBtn) lightboxNextBtn.addEventListener("click", (event) => {
       event.stopPropagation();
       nextGalleryImage();
     });
