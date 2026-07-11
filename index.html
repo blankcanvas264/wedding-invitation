@@ -1308,7 +1308,7 @@
     });
 
     document.getElementById("copyUrlBtn").addEventListener("click", () => {
-      copyText(window.location.href, "청첩장 주소가 복사되었습니다.");
+      copyText(SITE_URL, "청첩장 주소가 복사되었습니다.");
     });
 
 
@@ -1356,49 +1356,22 @@
 
     loadKakaoMap();
 
+    // URL 자체를 휴대폰의 기본 공유창으로 전달합니다.
+    // 카카오톡을 선택하면 주소를 직접 붙여넣은 것과 같은 일반 링크 카드로 전송됩니다.
     document.getElementById("kakaoShareBtn").addEventListener("click", async () => {
-      const currentUrl = window.location.href;
-
-      if (window.Kakao && KAKAO_JS_KEY && !KAKAO_JS_KEY.includes("여기에_")) {
-        if (!Kakao.isInitialized()) Kakao.init(KAKAO_JS_KEY);
-        Kakao.Share.sendDefault({
-          objectType: "feed",
-          content: {
-            title: invitation.title,
-            description: invitation.description,
-            imageUrl: invitation.imageUrl,
-            link: {
-              mobileWebUrl: currentUrl,
-              webUrl: currentUrl
-            }
-          },
-          buttons: [
-            {
-              title: "청첩장 보기",
-              link: {
-                mobileWebUrl: currentUrl,
-                webUrl: currentUrl
-              }
-            }
-          ]
-        });
-        return;
-      }
+      const shareUrl = SITE_URL;
 
       if (navigator.share) {
         try {
-          await navigator.share({
-            title: invitation.title,
-            text: invitation.description,
-            url: currentUrl
-          });
+          await navigator.share({ url: shareUrl });
           return;
         } catch (error) {
-          // 사용자가 공유창을 닫은 경우에도 복사 안내로 대체합니다.
+          // 사용자가 공유창을 닫은 경우에는 아무 작업도 하지 않습니다.
+          if (error && error.name === "AbortError") return;
         }
       }
 
-      copyText(currentUrl, "공유 링크가 복사되었습니다. 카카오톡에 붙여넣어 보내세요.");
+      copyText(shareUrl, "청첩장 주소가 복사되었습니다. 카카오톡에 붙여넣어 주세요.");
     });
 
     const observer = new IntersectionObserver((entries) => {
