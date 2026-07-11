@@ -1428,6 +1428,22 @@
     const galleryThumbs = document.getElementById("galleryThumbs");
     const galleryCount = document.getElementById("galleryCount");
     let currentGalleryIndex = 0;
+    let galleryRenderTimer = null;
+
+    function centerActiveThumbnail(index, behavior = "smooth") {
+      const activeThumb = galleryThumbs.children[index];
+      if (!activeThumb) return;
+
+      const targetLeft = activeThumb.offsetLeft
+        - (galleryThumbs.clientWidth - activeThumb.offsetWidth) / 2;
+      const maxScrollLeft = Math.max(0, galleryThumbs.scrollWidth - galleryThumbs.clientWidth);
+      const safeLeft = Math.min(Math.max(targetLeft, 0), maxScrollLeft);
+
+      galleryThumbs.scrollTo({
+        left: safeLeft,
+        behavior
+      });
+    }
 
     function updateLightboxImage() {
       if (!lightbox.classList.contains("show")) return;
@@ -1439,16 +1455,24 @@
 
     function renderGallery(index) {
       currentGalleryIndex = (index + galleryImages.length) % galleryImages.length;
-      const currentImage = galleryImages[currentGalleryIndex];
+      const nextIndex = currentGalleryIndex;
+      const currentImage = galleryImages[nextIndex];
+
+      clearTimeout(galleryRenderTimer);
       galleryMainImage.style.opacity = "0";
-      window.setTimeout(() => {
+
+      galleryRenderTimer = window.setTimeout(() => {
         galleryMainImage.src = currentImage.src;
         galleryMainImage.alt = currentImage.alt;
-        galleryCount.textContent = `${currentGalleryIndex + 1} / ${galleryImages.length}`;
-        document.querySelectorAll(".thumb").forEach((thumb, thumbIndex) => {
-          thumb.classList.toggle("is-active", thumbIndex === currentGalleryIndex);
-          thumb.setAttribute("aria-current", thumbIndex === currentGalleryIndex ? "true" : "false");
+        galleryCount.textContent = `${nextIndex + 1} / ${galleryImages.length}`;
+
+        Array.from(galleryThumbs.children).forEach((thumb, thumbIndex) => {
+          const isActive = thumbIndex === nextIndex;
+          thumb.classList.toggle("is-active", isActive);
+          thumb.setAttribute("aria-current", isActive ? "true" : "false");
         });
+
+        centerActiveThumbnail(nextIndex);
         updateLightboxImage();
         galleryMainImage.style.opacity = "1";
       }, 90);
@@ -1498,6 +1522,8 @@
       thumb.addEventListener("click", () => renderGallery(index));
       galleryThumbs.appendChild(thumb);
     });
+
+    centerActiveThumbnail(0, "auto");
 
     if (galleryPrevBtn) galleryPrevBtn.addEventListener("click", prevGalleryImage);
     if (galleryNextBtn) galleryNextBtn.addEventListener("click", nextGalleryImage);
