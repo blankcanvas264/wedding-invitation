@@ -8,7 +8,10 @@
   <meta property="og:title" content="한수진 · 조애심 결혼합니다" />
   <meta property="og:description" content="2026년 11월 14일 토요일 오후 5시, 루벨 강동" />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://blankcanvas264.github.io/wedding-invitation/" />
   <meta property="og:image" content="https://blankcanvas264.github.io/wedding-invitation/images/share01.jpg" />
+  <meta property="og:image:width" content="800" />
+  <meta property="og:image:height" content="800" />
 
   <!--
     모바일 청첩장 한 파일 버전
@@ -1356,11 +1359,10 @@
 
     loadKakaoMap();
 
-    // 카카오톡 공유창을 직접 열고, 메시지 본문에 청첩장 URL을 전송합니다.
-    // 일반 공유창이 아니라 카카오톡의 채팅방 선택 화면으로 바로 연결됩니다.
+    // 카카오톡 피드 카드로 공유합니다.
+    // 대표 이미지, 제목, 설명, 청첩장 보기 버튼이 표시되며
+    // 이미지 또는 버튼을 누르면 청첩장 페이지로 이동합니다.
     document.getElementById("kakaoShareBtn").addEventListener("click", async () => {
-      const shareUrl = SITE_URL;
-
       if (window.Kakao && KAKAO_JS_KEY && !KAKAO_JS_KEY.includes("여기에_")) {
         try {
           if (!Kakao.isInitialized()) {
@@ -1368,13 +1370,27 @@
           }
 
           Kakao.Share.sendDefault({
-            objectType: "text",
-            text: shareUrl,
-            link: {
-              mobileWebUrl: shareUrl,
-              webUrl: shareUrl
+            objectType: "feed",
+            content: {
+              title: invitation.title,
+              description: invitation.description,
+              imageUrl: invitation.imageUrl,
+              imageWidth: 800,
+              imageHeight: 800,
+              link: {
+                mobileWebUrl: SITE_URL,
+                webUrl: SITE_URL
+              }
             },
-            buttonTitle: "청첩장 보기"
+            buttons: [
+              {
+                title: "청첩장 보기",
+                link: {
+                  mobileWebUrl: SITE_URL,
+                  webUrl: SITE_URL
+                }
+              }
+            ]
           });
           return;
         } catch (error) {
@@ -1386,14 +1402,18 @@
       // 카카오 SDK를 사용할 수 없는 환경에서만 기본 공유창으로 대체합니다.
       if (navigator.share) {
         try {
-          await navigator.share({ url: shareUrl });
+          await navigator.share({
+            title: invitation.title,
+            text: invitation.description,
+            url: SITE_URL
+          });
           return;
         } catch (error) {
           if (error && error.name === "AbortError") return;
         }
       }
 
-      copyText(shareUrl, "청첩장 주소가 복사되었습니다.");
+      copyText(SITE_URL, "청첩장 주소가 복사되었습니다.");
     });
 
     const observer = new IntersectionObserver((entries) => {
