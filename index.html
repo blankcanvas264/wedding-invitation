@@ -1356,22 +1356,44 @@
 
     loadKakaoMap();
 
-    // URL 자체를 휴대폰의 기본 공유창으로 전달합니다.
-    // 카카오톡을 선택하면 주소를 직접 붙여넣은 것과 같은 일반 링크 카드로 전송됩니다.
+    // 카카오톡 공유창을 직접 열고, 메시지 본문에 청첩장 URL을 전송합니다.
+    // 일반 공유창이 아니라 카카오톡의 채팅방 선택 화면으로 바로 연결됩니다.
     document.getElementById("kakaoShareBtn").addEventListener("click", async () => {
       const shareUrl = SITE_URL;
 
+      if (window.Kakao && KAKAO_JS_KEY && !KAKAO_JS_KEY.includes("여기에_")) {
+        try {
+          if (!Kakao.isInitialized()) {
+            Kakao.init(KAKAO_JS_KEY);
+          }
+
+          Kakao.Share.sendDefault({
+            objectType: "text",
+            text: shareUrl,
+            link: {
+              mobileWebUrl: shareUrl,
+              webUrl: shareUrl
+            },
+            buttonTitle: "청첩장 보기"
+          });
+          return;
+        } catch (error) {
+          console.error("카카오톡 공유 오류:", error);
+          showToast("카카오톡 공유를 열지 못했습니다. 기본 공유창을 엽니다.");
+        }
+      }
+
+      // 카카오 SDK를 사용할 수 없는 환경에서만 기본 공유창으로 대체합니다.
       if (navigator.share) {
         try {
           await navigator.share({ url: shareUrl });
           return;
         } catch (error) {
-          // 사용자가 공유창을 닫은 경우에는 아무 작업도 하지 않습니다.
           if (error && error.name === "AbortError") return;
         }
       }
 
-      copyText(shareUrl, "청첩장 주소가 복사되었습니다. 카카오톡에 붙여넣어 주세요.");
+      copyText(shareUrl, "청첩장 주소가 복사되었습니다.");
     });
 
     const observer = new IntersectionObserver((entries) => {
